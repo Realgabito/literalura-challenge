@@ -14,10 +14,19 @@ public record BooksData(
 ) {
     @Override
     public String toString() {
-        return
+
+        String authorString = author.stream()
+                .map(AuthorData::toString)
+                .reduce("", (partial, element) -> partial + element);
+
+        String languagesString = String.join(", ", languages);
+
+        return  "--------LIBRO--------" + "\n" +
                 "Titulo: " + title + '\n' +
-                "Autor: " + author + '\n' +
-                "Idiomas: " + languages + '\n' +
-                "Numero de Descargas: " + downloads;
+                "Autor: " + authorString + '\n' +
+                "Idiomas: " + languagesString + '\n' +
+                "Numero de Descargas: " + downloads + '\n' +
+                        "-------------------\n" + "\n"
+                ;
     }
 }

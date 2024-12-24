@@ -11,8 +11,8 @@ public record AuthorData(
 ) {
     @Override
     public String toString() {
-        return  "Nombre: " + name + '\n' +
+        return    name + '\n' +
                 "Año de nacimiento: " + DoB + '\n' +
-                "Año de fallecimiento: " + DoD + '\n';
+                "Año de fallecimiento: " + DoD ;
     }
 }
