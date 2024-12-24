@@ -1,4 +1,10 @@
 package com.literalura.literalura.repository;
 
-public interface BooksDataRepository {
+import com.literalura.literalura.model.BooksData;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface BooksDataRepository extends JpaRepository<BooksData, Long> {
+
 }
