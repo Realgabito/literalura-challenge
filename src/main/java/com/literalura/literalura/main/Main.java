@@ -5,6 +5,7 @@ import com.literalura.literalura.repository.AuthorRepository;
 import com.literalura.literalura.repository.BooksRepository;
 import com.literalura.literalura.service.ConvertData;
 import com.literalura.literalura.service.RequestAPI;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
@@ -67,6 +68,7 @@ public class Main {
                     searchBookWeb();
                     break;
 
+
                 case 2:
                     listRegisteredBooks();
                     break;
@@ -86,39 +88,6 @@ public class Main {
 
 
         }
-    }
-
-    private void listBooksByLanguages() {
-        var language = showLanguages();
-        books = booksRepository.findByLanguagesContainingIgnoreCase(language);
-
-        if (books.isEmpty()) {
-            System.out.println("No se encontraron libros con ese idioma");
-        } else {
-            books.stream()
-                    .sorted(Comparator.comparing(Books::getTitle))
-                    .forEach(System.out::println);
-        }
-    }
-
-    private String showLanguages() {
-        var language = "";
-        var menu = """
-                "\n-------------------------------------------------------------\n
-                "\n--------     INGRESE EL IDIOMA QUE DESEA BUSCAR     --------\n
-                "\n-------------------------------------------------------------\n
-                
-                1 - [es] ---> Español
-                2 - [en] ---> Ingles
-                3 - [fr] ---> Frances
-                4 - [pr] ---> Portugues
-                
-                "
-                -------------------------------------------------------------
-                """;
-
-        System.out.println(menu);
-        return userInput.nextLine().replace(" ", "").toLowerCase();
     }
 
     private void searchBookWeb() {
@@ -144,15 +113,45 @@ public class Main {
                         return newAuthor;
                     });
 
-           Books book = new Books();
-           book.setTitle(books.title());
-           book.setLanguages(language);
-           book.setDownloads(downloads);
-           book.setAuthor(author);
 
-           booksRepository.save(book);
+            Optional<Books> existingBook = booksRepository.findByTitleContainingIgnoreCase(books.title());
 
-            System.out.println("Libro guardado! " + '\n' + books);
+            if (existingBook.isPresent()) {
+                System.out.println("""
+                      \n-------------------------------------------------------------\n
+                      \n--------     EL LIBRO YA ESTA REGISTRADO    --------\n
+                      \n-------------------------------------------------------------\n
+                      """ + existingBook.get());
+            } else {
+
+                Books book = new Books();
+                book.setTitle(books.title());
+                book.setLanguages(language);
+                book.setDownloads(downloads);
+                book.setAuthor(author);
+
+
+                booksRepository.save(book);
+                System.out.println(book + """
+                        
+                        \n-------------------------------------------------------------\n
+                        \n--------      LIBRO REGISTRADO    --------\n
+                        \n-------------------------------------------------------------\n
+                        """);
+            }
+
+
+//           try {
+//               booksRepository.save(book);
+//           } catch (DataIntegrityViolationException e) {
+//               System.out.println("""
+//                       \n-------------------------------------------------------------\n
+//                       \n--------     EL LIBRO YA ESTA REGISTRADO    --------\n
+//                       \n-------------------------------------------------------------\n
+//                       """);
+//           }
+
+//            System.out.println( books);
 
         }
     }
@@ -226,6 +225,39 @@ public class Main {
                     .sorted(Comparator.comparing(Author::getName))
                     .forEach(System.out::println);
         }
+    }
+
+    private void listBooksByLanguages() {
+        var language = showLanguages();
+        books = booksRepository.findByLanguagesContainingIgnoreCase(language);
+
+        if (books.isEmpty()) {
+            System.out.println("No se encontraron libros con ese idioma");
+        } else {
+            books.stream()
+                    .sorted(Comparator.comparing(Books::getTitle))
+                    .forEach(System.out::println);
+        }
+    }
+
+    private String showLanguages() {
+        var language = "";
+        var menu = """
+                \n-------------------------------------------------------------\n
+                \n--------     INGRESE EL IDIOMA QUE DESEA BUSCAR     --------\n
+                \n-------------------------------------------------------------\n
+                
+                1 - [es] ---> Español
+                2 - [en] ---> Ingles
+                3 - [fr] ---> Frances
+                4 - [pr] ---> Portugues
+                
+                
+                -------------------------------------------------------------
+                """;
+
+        System.out.println(menu);
+        return userInput.nextLine().replace(" ", "").toLowerCase();
     }
 
 
