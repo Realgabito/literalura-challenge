@@ -12,5 +12,16 @@ public record BooksData(
         @JsonAlias("languages") List<String> languages,
         @JsonAlias("download_count") Double downloads
 ) {
-
+    @Override
+    public String toString() {
+        return
+                "\n---------------------------------------------\n" +
+                "\n---------LIBRO-----------\n" +
+                "\n---------------------------------------------\n" +
+                "Titulo: " + title + "\n" +
+                "Autor: " + author + "\n" +
+                "Languages: " + languages + "\n"+
+                "Numero de Descargas: " + downloads + "\n" +
+                "\n---------------------------------------------\n";
+    }
 }
