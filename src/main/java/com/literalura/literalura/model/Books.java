@@ -28,6 +28,7 @@ public class Books {
         this.title = booksData.title();
         this.downloads = booksData.downloads();
         this.author = (Author) booksData.author();
+        this.languages = booksData.languages().toString();
 
     }
 
@@ -72,4 +73,17 @@ public class Books {
     public void setAuthor(Author author) {
         this.author = author;
     }
+
+    @Override
+    public String toString() {
+        return  "\n-------------------------------------------------------------\n" +
+                "-----------------        LIBRO         ----------------------\n" +
+                "-------------------------------------------------------------\n" +
+                "Título: " + title + "\n" +
+                        "Idioma: " + languages + "\n" +
+                        "Descargas: " + downloads + "\n" +
+                        "Autor: " + (author != null ? author.getName() : "Sin autor") +
+                "\n-------------------------------------------------------------\n";
+    }
 }
+
