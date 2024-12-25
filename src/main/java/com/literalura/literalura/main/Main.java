@@ -1,14 +1,13 @@
 package com.literalura.literalura.main;
 
-import com.literalura.literalura.model.Author;
-import com.literalura.literalura.model.Books;
-import com.literalura.literalura.model.BooksData;
-import com.literalura.literalura.model.Data;
+import com.literalura.literalura.model.*;
+import com.literalura.literalura.repository.AuthorRepository;
 import com.literalura.literalura.repository.BooksRepository;
 import com.literalura.literalura.service.ConvertData;
 import com.literalura.literalura.service.RequestAPI;
 import org.springframework.stereotype.Component;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -27,9 +26,11 @@ public class Main {
     private List<Author> authors;
     private Optional<Books> searchedBook;
     private BooksRepository booksRepository;
+    private AuthorRepository authorRepository;
 
-    public Main(BooksRepository booksRepository) {
+    public Main(BooksRepository booksRepository, AuthorRepository authorRepository) {
         this.booksRepository = booksRepository;
+        this.authorRepository = authorRepository;
     }
 
 
@@ -65,10 +66,59 @@ public class Main {
                 case 1:
                     searchBookWeb();
                     break;
+
+                case 2:
+                    listRegisteredBooks();
+                    break;
+
+                case 3:
+                    listRegisteredAuthors();
+                    break;
+
+                case 4:
+                    listAuthorsAlive();
+                    break;
+
+                case 5:
+                    listBooksByLanguages();
+                    break;
             }
 
 
         }
+    }
+
+    private void listBooksByLanguages() {
+        var language = showLanguages();
+        books = booksRepository.findByLanguagesContainingIgnoreCase(language);
+
+        if (books.isEmpty()) {
+            System.out.println("No se encontraron libros con ese idioma");
+        } else {
+            books.stream()
+                    .sorted(Comparator.comparing(Books::getTitle))
+                    .forEach(System.out::println);
+        }
+    }
+
+    private String showLanguages() {
+        var language = "";
+        var menu = """
+                "\n-------------------------------------------------------------\n
+                "\n--------     INGRESE EL IDIOMA QUE DESEA BUSCAR     --------\n
+                "\n-------------------------------------------------------------\n
+                
+                1 - [es] ---> Español
+                2 - [en] ---> Ingles
+                3 - [fr] ---> Frances
+                4 - [pr] ---> Portugues
+                
+                "
+                -------------------------------------------------------------
+                """;
+
+        System.out.println(menu);
+        return userInput.nextLine().replace(" ", "").toLowerCase();
     }
 
     private void searchBookWeb() {
@@ -82,6 +132,29 @@ public class Main {
 
         String language = books.languages().isEmpty() ? "Idioma no encontrado" : books.languages().get(0);
         Double downloads = books.downloads();
+
+        for (AuthorData authorData : books.author()) {
+            Author author = authorRepository.findByNameIgnoreCase(authorData.name())
+                    .orElseGet(() -> {
+                        Author newAuthor = new Author();
+                        newAuthor.setName(authorData.name());
+                        newAuthor.setDateOfBirth(authorData.dateOfBirth());
+                        newAuthor.setDateOfBirth(authorData.dateOfDeath());
+                        authorRepository.save(newAuthor);
+                        return newAuthor;
+                    });
+
+           Books book = new Books();
+           book.setTitle(books.title());
+           book.setLanguages(language);
+           book.setDownloads(downloads);
+           book.setAuthor(author);
+
+           booksRepository.save(book);
+
+            System.out.println("Libro guardado! " + '\n' + books);
+
+        }
     }
 
 
@@ -121,6 +194,37 @@ public class Main {
         } catch (Exception e) {
             System.out.println("Ocurrio un error al buscar el libro" + e);
             return null;
+        }
+    }
+
+    private void listRegisteredBooks() {
+        books = booksRepository.findAll();
+
+        books.stream()
+                .sorted(Comparator.comparing(Books::getLanguages))
+                .forEach(System.out::println);
+    }
+
+    private void listRegisteredAuthors() {
+        authors = authorRepository.findAll();
+        authors.stream()
+                .sorted(Comparator.comparing(Author::getName))
+                .forEach(System.out::println);
+
+    }
+
+    private void listAuthorsAlive() {
+        System.out.println("Ingrese el año que desea consultar");
+        var year = userInput.nextInt();
+        userInput.nextLine();
+        authors = authorRepository.findAliveInYear(year);
+
+        if (authors.isEmpty()) {
+            System.out.println("No pudimos encontrar autores vivos en el ano: " + year);
+        } else {
+            authors.stream()
+                    .sorted(Comparator.comparing(Author::getName))
+                    .forEach(System.out::println);
         }
     }
 
