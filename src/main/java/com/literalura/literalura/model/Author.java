@@ -58,4 +58,15 @@ public class Author {
     public void setId(Long id) {
         Id = id;
     }
+
+    @Override
+    public String toString() {
+        return  "\n---------------------------------------------\n" +
+                "---------      AUTORES     -----------\n" +
+                "---------------------------------------------\n" +
+                "Nombre: " + name + '\n' +
+                "Año de nacimiento: " + dateOfBirth + '\n' +
+                "Año de fallecimiento: " + dateOfDeath + '\n' +
+                "\n---------------------------------------------\n";
+    }
 }

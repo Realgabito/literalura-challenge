@@ -16,8 +16,8 @@ public record BooksData(
     public String toString() {
         return
                 "\n---------------------------------------------\n" +
-                "\n---------LIBRO-----------\n" +
-                "\n---------------------------------------------\n" +
+                "---------LIBRO-----------\n" +
+                "---------------------------------------------\n" +
                 "Titulo: " + title + "\n" +
                 "Autor: " + author + "\n" +
                 "Languages: " + languages + "\n"+
