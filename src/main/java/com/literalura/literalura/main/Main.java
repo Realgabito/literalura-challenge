@@ -159,11 +159,19 @@ public class Main {
 
     private BooksData getBookData() {
         try {
-            System.out.println("Escribe el nombre del libro que deseas buscar");
+            System.out.println("""
+                      \n-------------------------------------------------------------\n
+                      \n--------     INGRESE EL NOMBRE DEL LIBRO    --------\n
+                      \n-------------------------------------------------------------\n
+                      """ );
             var bookTitle = userInput.nextLine();
 
             if (bookTitle.isEmpty()) {
-                System.out.println("El titulo del libro no puede estar vacio");
+                System.out.println("""
+                      \n-------------------------------------------------------------\n
+                      \n--------     EL TITULO NO PUEDE ESTAR VACIO    --------\n
+                      \n-------------------------------------------------------------\n
+                      """ );
                 return null;
             }
 
@@ -213,7 +221,11 @@ public class Main {
     }
 
     private void listAuthorsAlive() {
-        System.out.println("Ingrese el año que desea consultar");
+        System.out.println("""
+                      \n-------------------------------------------------------------\n
+                      \n--------     INGRESE EL AÑO QUE DESEA CONSULTAR    --------\n
+                      \n-------------------------------------------------------------\n
+                      """ );
         var year = userInput.nextInt();
         userInput.nextLine();
         authors = authorRepository.findAliveInYear(year);
@@ -232,7 +244,11 @@ public class Main {
         books = booksRepository.findByLanguagesContainingIgnoreCase(language);
 
         if (books.isEmpty()) {
-            System.out.println("No se encontraron libros con ese idioma");
+            System.out.println("""
+                      \n-------------------------------------------------------------\n
+                      \n--------     NO SE ENCONTRARON LIBROS CON ESE IDIOMA EN LA BASE DE DATOS   --------\n
+                      \n-------------------------------------------------------------\n
+                      """ );
         } else {
             books.stream()
                     .sorted(Comparator.comparing(Books::getTitle))
